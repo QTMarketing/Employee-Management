@@ -1,0 +1,18 @@
+# Cursor Rules: Employee Compliance System
+
+## Context & logic
+- [cite_start]Always refer to `PRD 2 — Employee Management & Compliance System.pdf` for business rules[cite: 1].
+- [cite_start]Enforce the 3-tier alert system: 60 days (Warning), 30 days (Urgent), 7 days (Final)[cite: 44].
+- [cite_start]Required documents for "Compliant" status: Driver License, SSN, Work Permit, Alcohol Sales Permit, Food Safety Certificate[cite: 29, 30, 31, 32, 33].
+
+## Tech Stack Preferences
+- Frontend: Next.js 14 (App Router), Tailwind CSS, Lucide-react icons.
+- Backend: Server Actions and API Routes following the `{ success: boolean, data: any, error: string }` pattern.
+- [cite_start]Database: Use the schema defined in `DATABASE_SCHEMA.md`[cite: 63].
+
+## UI/UX Standards
+- Use a "Traffic Light" system for document status:
+  - [cite_start]Red: Expired or Missing[cite: 49, 53].
+  - [cite_start]Orange: Within the 60/30/7 day alert windows[cite: 44].
+  - Green: Valid and outside alert windows.
+- Sidebar must be Dark Theme (`bg-slate-900`), Main Content must be Light Theme (`bg-gray-50`).
