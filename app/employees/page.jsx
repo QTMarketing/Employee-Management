@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Building2, Plus, Search, Trash2, UserCircle2 } from "lucide-react";
+import { Building2, Download, Plus, Search, Trash2, UserCircle2 } from "lucide-react";
 
 export default function Employees() {
     const [employees, setEmployees] = useState([]);
@@ -9,6 +9,7 @@ export default function Employees() {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [query, setQuery] = useState("");
+    const [selectedStore, setSelectedStore] = useState("");
 
     const [formData, setFormData] = useState({
         name: '', employee_id: '', store_id: '', position: '', hire_date: '', email: '', phone: ''
@@ -64,9 +65,12 @@ export default function Employees() {
     };
 
     const filteredEmployees = useMemo(() => {
+        const byStore = selectedStore
+            ? employees.filter((emp) => String(emp.store_id || "") === selectedStore)
+            : employees;
         const q = query.trim().toLowerCase();
-        if (!q) return employees;
-        return employees.filter((emp) => {
+        if (!q) return byStore;
+        return byStore.filter((emp) => {
             const searchable = [
                 emp.employee_id,
                 emp.name,
@@ -79,7 +83,14 @@ export default function Employees() {
                 .toLowerCase();
             return searchable.includes(q);
         });
-    }, [employees, query]);
+    }, [employees, query, selectedStore]);
+
+    const handleExport = () => {
+        const params = new URLSearchParams();
+        if (query.trim()) params.set("q", query.trim());
+        if (selectedStore) params.set("store_id", selectedStore);
+        window.location.href = `/api/employees/export${params.toString() ? `?${params.toString()}` : ""}`;
+    };
 
     if (loading) return <div className="dashboard-container text-sm text-gray-500">Loading employees...</div>;
 
@@ -105,8 +116,28 @@ export default function Employees() {
                                     className="w-[250px] text-sm border border-gray-200 rounded-xl bg-white pl-9 pr-3 py-2.5 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 />
                             </div>
+                            <select
+                                value={selectedStore}
+                                onChange={(e) => setSelectedStore(e.target.value)}
+                                className="h-10 min-w-[170px] text-sm border border-gray-200 rounded-xl bg-white px-3 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="">All Stores</option>
+                                {stores.map((s) => (
+                                    <option key={s.id} value={String(s.id)}>
+                                        {s.store_number || `Store ${s.id}`}
+                                    </option>
+                                ))}
+                            </select>
                             <button
-                                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors shadow-sm"
+                                type="button"
+                                onClick={handleExport}
+                                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium whitespace-nowrap transition-colors shadow-sm"
+                            >
+                                <Download size={14} />
+                                Export CSV
+                            </button>
+                            <button
+                                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium whitespace-nowrap transition-colors shadow-sm"
                                 onClick={() => setShowModal(true)}
                             >
                                 <Plus size={15} />
@@ -119,6 +150,9 @@ export default function Employees() {
 
             <section className="dashboard-section">
                 <div className="dashboard-surface-card p-0 max-w-full overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 text-xs text-gray-500">
+                        Showing {filteredEmployees.length} employee{filteredEmployees.length !== 1 ? "s" : ""}{selectedStore ? " for selected store" : ""}.
+                    </div>
                     <div className="max-w-full overflow-x-auto">
                     <table className="dashboard-table w-full min-w-[900px] table-auto text-sm">
                         <thead>

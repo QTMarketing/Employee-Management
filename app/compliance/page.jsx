@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Download } from "lucide-react";
 
 export default function Compliance() {
     const [alerts, setAlerts] = useState([]);
@@ -28,12 +29,24 @@ export default function Compliance() {
         setAlerts(alerts.map(a => a.id === id ? { ...a, read: 1 } : a));
     };
 
+    const handleExport = () => {
+        window.location.href = "/api/alerts/export";
+    };
+
     if (loading) return <div>Loading alerts...</div>;
 
     return (
         <div className="dashboard-container">
             <div className="header">
                 <h1>Compliance Center</h1>
+                <button
+                    type="button"
+                    onClick={handleExport}
+                    className="btn btn-secondary inline-flex items-center gap-2 whitespace-nowrap"
+                >
+                    <Download size={14} />
+                    Export CSV
+                </button>
             </div>
 
             <div className="card">

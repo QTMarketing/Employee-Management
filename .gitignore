@@ -9,6 +9,7 @@ pnpm-debug.log*
 
 # Local env/session files
 .env
+.env.local
 cookies.txt
 
 # Runtime uploads and local database

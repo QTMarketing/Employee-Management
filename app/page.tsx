@@ -14,6 +14,7 @@ import {
   TrendingUp,
   RefreshCw,
   Search,
+  Download,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -193,6 +194,13 @@ export default function DashboardPage() {
   const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const handleRiskExport = () => {
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
+    if (selectedStore) params.set("store_id", selectedStore);
+    window.location.href = `/api/exports/risk-register${params.toString() ? `?${params.toString()}` : ""}`;
+  };
 
   const loadLiveData = async () => {
     try {
@@ -499,13 +507,23 @@ export default function DashboardPage() {
                 Employees with missing, expired, or expiring documents requiring action.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs text-gray-400">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleRiskExport}
+                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-gray-200 bg-white text-gray-600 text-xs font-semibold hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                <Download size={12} />
+                Export CSV
+              </button>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
               <span className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
                 {nonCompliantCount} non-compliant
               </span>
               <span className="text-gray-300">·</span>
               <span>{atRiskEmployees.length} total issues</span>
+              </div>
             </div>
           </div>
 
